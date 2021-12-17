@@ -1,7 +1,9 @@
-import { useState , useEffect } from 'react';
+import { useState  } from 'react';
 import './App.scss';
-import Child from './components/child'
-import { MdAddTask } from "react-icons/md";
+import Todo from './components/todo'
+import Input from './components/input';
+import Add from './components/add'
+
 
 function App() {
   const todo = [
@@ -22,22 +24,29 @@ function App() {
 
   //Fetching data from localstorage
   
- const local_storage = () => {
-      let l = localStorage.getItem('list');
-     // console.log(l.length);
+const local_storage = () => {
+  const l = localStorage.getItem("list");
+  console.log(l)
+  if(l == null){
+    return [...todo]
+  }else{
+    return JSON.parse(localStorage.getItem("list"))
+  }
+}
 
-      if(l.length-2 !== 0){      // Here checking whether array is empty or not
-          return JSON.parse(localStorage.getItem('list'));  //returning the stored data 
-      }else{
-        return [...todo] //if stored data is empty then it will return copy of hard coded array (i.e todo)
-      }
-   
- }
 
   const [add , setAdd] = useState(local_storage());
   const [input , setInput] = useState("");
   const [toggel , setToggel] = useState(true);
   const [update , setUpdate] = useState("")
+  
+
+
+  //handling input field
+
+  const handleChange = (e) => {
+    setInput(e.target.value);
+  }
 
   //hadling the delete operation
 
@@ -51,10 +60,16 @@ function App() {
  //Handling the add operation
 
   const handleAdd = () => { // Here just i just concatinating new element in the array
-    setAdd(todo => [...todo , 
-      {id: todo.length+1,
-      topic:input}
-    ])
+    if(!input){
+      alert("fill in the black space")
+    }else{
+      setAdd(todo => [...todo , 
+        {id: todo.length+1,
+        topic:input}
+      ])
+     
+    }
+   
    
     
   }
@@ -77,6 +92,7 @@ function App() {
             return{ ...c , topic:input}
         }
         return c ;
+        
     })
     )
     setToggel(true) //Again after the updatation of element making toggel true to change into add button
@@ -84,39 +100,31 @@ function App() {
     setUpdate(null)
   }
 
-  // Storing the data in localStorage
-  useEffect(() => {
-    localStorage.setItem('list' ,JSON.stringify(add))
-  } , [add])
-
+  localStorage.setItem('list' ,JSON.stringify(add))
+  
   return (
     <div className="App">
         <h1>
           To Do App
         </h1>
-        {
-            toggel === true ?
-                <div>
-                  <input type="text" placeholder='    Add your to do list' 
-                  onChange={(e) => {setInput(e.target.value)}}
-                  />
-                  <button className='button1' onClick={handleAdd}> <MdAddTask/> ADD</button>
-                  
-                </div>
-               : 
-                <div>
-                  <input type="text" placeholder='    Update your to do list' 
-                  value={input}
-                  onChange={(e) => {setInput(e.target.value)}}
-                  />
-                
-                <button className='button1' onClick={handleUpdate}><MdAddTask/> Update</button>
-                </div>
-       }
+        <div className='head'>
+          <Input
+            toggel = {toggel}
+          
+            value = {input}
+            onChange = {handleChange}
+          />
+          <Add
+            value = {toggel}
+            onAdd = {handleAdd}
+            onUpdate = {handleUpdate}
+
+          />
+        </div>
         
                 <div>
                   {add.map( c =>
-                  <Child
+                  <Todo
                   key = {c.id}
                   id = {c.id}
                   value = {c.topic}

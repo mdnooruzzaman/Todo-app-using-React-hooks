@@ -1,5 +1,5 @@
 import React from "react"
-import "./child.scss";
+import "./todo.scss";
 import { MdDelete } from "react-icons/md";
 import { MdEditCalendar } from "react-icons/md";
 
